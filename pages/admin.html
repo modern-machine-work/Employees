@@ -1,0 +1,78 @@
+<div class="page-header">
+  <div>
+    <h1>Admin Portal</h1>
+    <p>Review employees and attendance approvals.</p>
+  </div>
+  <button class="btn primary" type="button" id="refreshAdminBtn">Refresh</button>
+</div>
+
+<div class="tabbar">
+  <button class="tab-button active" data-tab="employees">Employees</button>
+  <button class="tab-button" data-tab="approvals">Pending Approvals <span id="pendingCount" class="badge pending">0</span></button>
+</div>
+
+<div id="employeesTab" class="tab-pane">
+  <div class="toolbar">
+    <input class="search-input" id="employeeSearch" placeholder="Search employees...">
+  </div>
+  <div class="employee-card-grid" id="employeeCards"></div>
+</div>
+
+<div id="approvalsTab" class="tab-pane hidden">
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Employee</th>
+          <th>Date</th>
+          <th>Check In</th>
+          <th>Break Start</th>
+          <th>Break End</th>
+          <th>Check Out</th>
+          <th>Remarks</th>
+          <th class="actions-col">Action</th>
+        </tr>
+      </thead>
+      <tbody id="pendingApprovalsBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div id="editAttendanceModal" class="modal-backdrop hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Edit Pending Attendance</h2>
+      <button class="btn small" type="button" id="closeEditAttendanceModal">Close</button>
+    </div>
+    <form id="editAttendanceForm" class="form-grid">
+      <input type="hidden" id="editPendingID">
+      <div class="form-field">
+        <label>Date</label>
+        <input type="date" id="editDate" required>
+      </div>
+      <div class="form-field">
+        <label>Check In</label>
+        <input type="time" id="editCheckIn">
+      </div>
+      <div class="form-field">
+        <label>Break Start</label>
+        <input type="time" id="editBreakStart">
+      </div>
+      <div class="form-field">
+        <label>Break End</label>
+        <input type="time" id="editBreakEnd">
+      </div>
+      <div class="form-field">
+        <label>Check Out</label>
+        <input type="time" id="editCheckOut">
+      </div>
+      <div class="form-field full">
+        <label>Remarks</label>
+        <textarea id="editRemarks"></textarea>
+      </div>
+      <div class="form-field full">
+        <button class="btn primary" type="submit">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
