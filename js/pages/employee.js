@@ -251,7 +251,10 @@ async function initEmployeePage() {
       alert(error.message);
     } finally {
       submitting = false;
-      setActionButtonsEnabled(true);
+      ['prevMonthBtn', 'nextMonthBtn'].forEach((id) => {
+        const node = document.getElementById(id);
+        if (node) node.disabled = false;
+      });
     }
   }
 
