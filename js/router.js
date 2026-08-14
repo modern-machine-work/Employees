@@ -41,6 +41,11 @@ async function navigateTo(routeName = getCurrentRoute()) {
     return;
   }
 
+  if (routeName === 'admin' && getRole().toLowerCase() !== 'admin') {
+    window.location.hash = 'employee';
+    return;
+  }
+
   showLoader();
   try {
     if (!route.public && getAuthToken()) {
