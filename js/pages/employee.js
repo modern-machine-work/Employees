@@ -311,18 +311,25 @@ async function initEmployeePage() {
     if (!rows.length && !pendingRows.length) return;
 
     let totalMinutes = 0;
+    let totalOTMinutes = 0;
     const renderSession = (row, status) => {
       const mins = Number(row.WorkMinutes || 0);
-      if (status === 'approved') totalMinutes += mins;
+      const otMins = Number(row.OTMinutes || 0);
+      if (status === 'approved') {
+        totalMinutes += mins;
+        totalOTMinutes += otMins;
+      }
       const chips = [];
       if (row.CheckIn) chips.push(`<div class="daychip"><span>Check In</span><strong>${formatTime12(row.CheckIn)}</strong></div>`);
       if (row.BreakStart) chips.push(`<div class="daychip"><span>Break</span><strong>${formatTime12(row.BreakStart)} – ${formatTime12(row.BreakEnd)}</strong></div>`);
       if (row.CheckOut) chips.push(`<div class="daychip"><span>Check Out</span><strong>${formatTime12(row.CheckOut)}</strong></div>`);
+      const hoursStr = mins ? `${minutesToHours(mins)} hrs` : '<span class="muted-text">In progress</span>';
+      const otStr = otMins ? ` + ${minutesToHours(otMins)} hrs` : '';
       return `
         <div class="day-session">
           <div class="day-session-head">
             <span class="badge ${status === 'approved' ? 'done' : 'pending'}">${status === 'approved' ? 'Approved' : 'Pending'}</span>
-            ${mins ? `<span class="day-hours">${minutesToHours(mins)} hrs</span>` : '<span class="muted-text">In progress</span>'}
+            <span class="day-hours">${hoursStr}${otStr}</span>
           </div>
           <div class="daychip-row">${chips.join('')}</div>
         </div>`;
@@ -332,7 +339,12 @@ async function initEmployeePage() {
     document.getElementById('dayDetailBody').innerHTML =
       rows.map((r) => renderSession(r, 'approved')).join('') +
       pendingRows.map((r) => renderSession(r, 'pending')).join('');
-    document.getElementById('dayDetailTotal').textContent = `Total: ${minutesToHours(totalMinutes)} hours`;
+    
+    let totalText = `Total: ${minutesToHours(totalMinutes)} hours`;
+    if (totalOTMinutes > 0) {
+      totalText += ` (OT : ${minutesToHours(totalOTMinutes)} hours)`;
+    }
+    document.getElementById('dayDetailTotal').textContent = totalText;
     document.getElementById('dayDetailModal').classList.remove('hidden');
   }
 
