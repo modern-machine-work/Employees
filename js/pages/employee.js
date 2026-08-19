@@ -182,7 +182,13 @@ async function initEmployeePage() {
 
   function nowTime() {
     const now = new Date();
-    return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const minutes = now.getMinutes();
+    let hours = now.getHours();
+    if (minutes >= 55) {
+      hours = (hours + 1) % 24;
+    }
+    const rounded = minutes <= 5 ? 0 : minutes;
+    return `${String(hours).padStart(2, '0')}:${String(rounded).padStart(2, '0')}`;
   }
 
   let breakField = 'BreakStart';
