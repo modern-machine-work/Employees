@@ -9,12 +9,14 @@ async function initEmployeePage() {
   let currentMonth = new Date().getMonth();
   let approved = [];
   let pending = [];
+  let advances = [];
   let me = null;
 
   async function loadData() {
-    const [employees, myAttendance] = await Promise.all([
+    const [employees, myAttendance, myAdvances] = await Promise.all([
       apiGet('getEmployees'),
       apiGet('getMyAttendance', { employeeID }),
+      apiGet('getAdvances').catch(() => []),
     ]);
 
     me = employees.find((row) => String(row.EmployeeID) === String(employeeID));
@@ -25,6 +27,7 @@ async function initEmployeePage() {
 
     approved = myAttendance.approved || [];
     pending = myAttendance.pending || [];
+    advances = myAdvances || [];
 
     const monthKey = getCurrentMonthKey();
     const approvedDates = approved.map((row) => normalizeDateStr(row.Date));
@@ -49,10 +52,13 @@ async function initEmployeePage() {
     document.getElementById('earnedSalary').textContent = formatCurrency(earned);
     document.getElementById('daysPresent').textContent = employee._daysWorked;
 
-    const todayStr = getTodayDateString();
-    const presentToday = approved.some((row) => normalizeDateStr(row.Date) === todayStr)
-      || pending.some((row) => normalizeDateStr(row.Date) === todayStr && row.CheckIn);
-    document.getElementById('currentStatus').textContent = presentToday ? 'Present Today' : 'Absent Today';
+    const monthKey = getCurrentMonthKey();
+    const monthAdvance = advances
+      .filter((row) => String(row.EmployeeID) === String(employeeID))
+      .filter((row) => String(row.Date || '').slice(0, 7) === monthKey)
+      .filter((row) => String(row.Status || '').toLowerCase() !== 'cancelled')
+      .reduce((sum, row) => sum + Number(row.Amount || 0), 0);
+    document.getElementById('advance').textContent = formatCurrency(monthAdvance);
   }
 
   function renderDetails(employee) {
