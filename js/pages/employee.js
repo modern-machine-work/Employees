@@ -84,9 +84,17 @@ async function initEmployeePage() {
 
   function getTodayPending() {
     const todayStr = getTodayDateString();
-    return pending
+    const todayPending = pending
       .filter((row) => normalizeDateStr(row.Date) === todayStr && String(row.Status || '').toLowerCase() === 'pending')
-      .sort((a, b) => String(b.PendingID).localeCompare(String(a.PendingID)))[0] || null;
+      .sort((a, b) => String(b.PendingID).localeCompare(String(a.PendingID)));
+    if (todayPending.length) return todayPending[0];
+
+    const yesterdayStr = getYesterdayDateString();
+    const yesterdayPending = pending
+      .filter((row) => normalizeDateStr(row.Date) === yesterdayStr && String(row.Status || '').toLowerCase() === 'pending')
+      .filter((row) => !row.CheckOut)
+      .sort((a, b) => String(b.PendingID).localeCompare(String(a.PendingID)));
+    return yesterdayPending[0] || null;
   }
 
   function formatTime12(value) {
