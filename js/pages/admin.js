@@ -40,7 +40,11 @@ async function initAdminPage() {
     const todayPending = pendingRows
       .filter((row) => normalizeDateStr(row.Date) === todayStr)
       .map((row) => Object.assign({}, row, { _status: 'Pending' }));
-    const today = todayApproved.concat(todayPending);
+    const yesterdayStr = getYesterdayDateString();
+    const yesterdayPending = pendingRows
+      .filter((row) => normalizeDateStr(row.Date) === yesterdayStr && !row.CheckOut)
+      .map((row) => Object.assign({}, row, { _status: 'Pending' }));
+    const today = todayApproved.concat(todayPending).concat(yesterdayPending);
     return { daysWorked, hoursWorked, today };
   }
 
