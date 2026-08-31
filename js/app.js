@@ -101,30 +101,11 @@ function getYesterdayDateString() {
 }
 
 function calculateEarnedSalary(employee, monthKey) {
-  const salaryType = String(employee.SalaryType || 'Monthly').toLowerCase();
   const monthly = Number(employee.MonthlySalary || 0);
-  const perDay = Number(employee.PerDaySalary || monthly / 26 || 0);
-  const perHour = Number(employee.PerHourSalary || (monthly / 26) / 11 || 0);
-  const daysWorked = Number(employee._daysWorked || 0);
-  const hoursWorked = Number(employee._hoursWorked || 0);
-
-  if (salaryType === 'monthly') {
-    if (daysWorked === 0) return 0;
-    const dateInMonth = parseDateValue(monthKey + '-01');
-    const daysInMonth = new Date(dateInMonth.getFullYear(), dateInMonth.getMonth() + 1, 0).getDate();
-    return (monthly / daysInMonth) * daysWorked;
-  }
-
-  if (salaryType === 'daily') {
-    return perDay * daysWorked;
-  }
-
-  if (salaryType === 'hourly') {
-    if (hoursWorked === 0) return 0;
-    return perHour * hoursWorked;
-  }
-
-  return monthly;
+  const perHour = Number(employee.PerHourSalary || employee.OTRate || 0);
+  const totalPayableMinutes = Number(employee._totalPayableMinutes || 0);
+  const totalHoursWorked = totalPayableMinutes / 60;
+  return totalHoursWorked * perHour;
 }
 
 function buildCalendarGrid(year, month, attendanceDates) {
