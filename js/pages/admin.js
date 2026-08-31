@@ -82,7 +82,7 @@ async function initAdminPage() {
       return name.includes(query) || id.includes(query) || dept.includes(query);
     }).sort((a, b) => String(b.EmployeeID || '').localeCompare(String(a.EmployeeID || '')));
 
-    document.getElementById('employeeCards').innerHTML = filtered.map((row) => {
+    employeeCardsEl.innerHTML = filtered.map((row) => {
       const stats = getEmployeeMonthStats(row.EmployeeID);
       const earned = computeEarned(row, stats);
       const todayRows = stats.today;
