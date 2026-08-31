@@ -30,14 +30,15 @@ async function initEmployeePage() {
     advances = myAdvances || [];
 
     const monthKey = getCurrentMonthKey();
+    const allAttendance = [...approved, ...pending];
     const approvedDates = approved.map((row) => normalizeDateStr(row.Date));
     const daysWorked = approvedDates.filter((d) => d.startsWith(monthKey)).length;
-    const hoursWorked = approved
+    const totalPayableMinutes = allAttendance
       .filter((row) => String(row.Date || '').slice(0, 7) === monthKey)
-      .reduce((sum, row) => sum + Number(row.WorkMinutes || 0), 0) / 60;
+      .reduce((sum, row) => sum + Number(row.WorkMinutes || 0) + Number(row.OTMinutes || 0), 0);
 
     me._daysWorked = daysWorked;
-    me._hoursWorked = hoursWorked;
+    me._totalPayableMinutes = totalPayableMinutes;
 
     renderHeader(me);
     renderDetails(me);
@@ -50,7 +51,7 @@ async function initEmployeePage() {
 
     const earned = calculateEarnedSalary(employee, getCurrentMonthKey());
     document.getElementById('earnedSalary').textContent = formatCurrency(earned);
-    document.getElementById('daysPresent').textContent = employee._daysWorked;
+    document.getElementById('totalHours').textContent = Number(employee._totalPayableMinutes || 0) / 60 ? (Number(employee._totalPayableMinutes || 0) / 60).toFixed(2) : '0.00';
 
     const monthKey = getCurrentMonthKey();
     const monthAdvance = advances
