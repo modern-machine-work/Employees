@@ -105,22 +105,22 @@ function calculateEarnedSalary(employee, monthKey) {
   const monthly = Number(employee.MonthlySalary || 0);
   const perDay = Number(employee.PerDaySalary || monthly / 26 || 0);
   const perHour = Number(employee.PerHourSalary || (monthly / 26) / 11 || 0);
+  const daysWorked = Number(employee._daysWorked || 0);
+  const hoursWorked = Number(employee._hoursWorked || 0);
 
   if (salaryType === 'monthly') {
-    const now = new Date();
+    if (daysWorked === 0) return 0;
     const dateInMonth = parseDateValue(monthKey + '-01');
     const daysInMonth = new Date(dateInMonth.getFullYear(), dateInMonth.getMonth() + 1, 0).getDate();
-    const daysUntilToday = Math.min(now.getDate(), daysInMonth);
-    return (monthly / daysInMonth) * daysUntilToday;
+    return (monthly / daysInMonth) * daysWorked;
   }
 
   if (salaryType === 'daily') {
-    const daysWorked = Number(employee._daysWorked || 0);
     return perDay * daysWorked;
   }
 
   if (salaryType === 'hourly') {
-    const hoursWorked = Number(employee._hoursWorked || 0);
+    if (hoursWorked === 0) return 0;
     return perHour * hoursWorked;
   }
 
