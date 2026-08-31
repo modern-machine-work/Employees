@@ -30,9 +30,11 @@ async function initAdminPage() {
     const monthKey = getCurrentMonthKey();
     const rows = monthAttendance.filter((row) => String(row.EmployeeID) === String(empID));
     const pendingRows = pendingAttendance.filter((row) => String(row.EmployeeID) === String(empID));
-    const monthRows = rows.filter((row) => normalizeDateStr(row.Date).startsWith(monthKey));
-    const daysWorked = monthRows.length;
-    const hoursWorked = monthRows.reduce((sum, row) => sum + Number(row.WorkMinutes || 0), 0) / 60;
+    const allAttendance = [...rows, ...pendingRows];
+    const monthRows = allAttendance.filter((row) => normalizeDateStr(row.Date).startsWith(monthKey));
+    const daysWorked = rows.filter((row) => normalizeDateStr(row.Date).startsWith(monthKey)).length;
+    const totalPayableMinutes = monthRows.reduce((sum, row) => sum + Number(row.WorkMinutes || 0) + Number(row.OTMinutes || 0), 0);
+    const hoursWorked = totalPayableMinutes / 60;
     const todayStr = getTodayDateString();
     const todayApproved = rows
       .filter((row) => normalizeDateStr(row.Date) === todayStr)
@@ -45,13 +47,14 @@ async function initAdminPage() {
       .filter((row) => normalizeDateStr(row.Date) === yesterdayStr && !row.CheckOut)
       .map((row) => Object.assign({}, row, { _status: 'Pending' }));
     const today = todayApproved.concat(todayPending).concat(yesterdayPending);
-    return { daysWorked, hoursWorked, today };
+    return { daysWorked, hoursWorked, today, totalPayableMinutes };
   }
 
   function computeEarned(employee, stats) {
     const clone = Object.assign({}, employee, {
       _daysWorked: stats.daysWorked,
       _hoursWorked: stats.hoursWorked,
+      _totalPayableMinutes: stats.totalPayableMinutes,
     });
     return calculateEarnedSalary(clone, getCurrentMonthKey());
   }
@@ -103,8 +106,8 @@ async function initAdminPage() {
         <p><strong>Dept:</strong> ${escapeHtml(row.Department || '—')}</p>
         <p><strong>Designation:</strong> ${escapeHtml(row.Designation || '—')}</p>
         <hr class="card-divider">
-        <p><strong>Salary Earned (this month):</strong> ${formatCurrency(earned)}</p>
-        <p><strong>Days Present (this month):</strong> ${stats.daysWorked}</p>
+        <p><strong>Salary Earned:</strong> ${formatCurrency(earned)}</p>
+        <p><strong>Total Hours:</strong> ${Number(stats.hoursWorked || 0).toFixed(2)}</p>
         <hr class="card-divider">
         <p><strong>Today:</strong></p>
         ${todayHtml}
