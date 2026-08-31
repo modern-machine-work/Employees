@@ -47,11 +47,16 @@ async function initEmployeePage() {
   }
 
   function renderHeader(employee) {
-    document.getElementById('employeePageTitle').textContent = employee.EmployeeName || 'My Portal';
+    const employeePageTitleEl = document.getElementById('employeePageTitle');
+    const earnedSalaryEl = document.getElementById('earnedSalary');
+    const totalHoursEl = document.getElementById('totalHours');
+    const advanceEl = document.getElementById('advance');
+
+    if (employeePageTitleEl) employeePageTitleEl.textContent = employee.EmployeeName || 'My Portal';
 
     const earned = calculateEarnedSalary(employee, getCurrentMonthKey());
-    document.getElementById('earnedSalary').textContent = formatCurrency(earned);
-    document.getElementById('totalHours').textContent = Number(employee._totalPayableMinutes || 0) / 60 ? (Number(employee._totalPayableMinutes || 0) / 60).toFixed(2) : '0.00';
+    if (earnedSalaryEl) earnedSalaryEl.textContent = formatCurrency(earned);
+    if (totalHoursEl) totalHoursEl.textContent = Number(employee._totalPayableMinutes || 0) / 60 ? (Number(employee._totalPayableMinutes || 0) / 60).toFixed(2) : '0.00';
 
     const monthKey = getCurrentMonthKey();
     const monthAdvance = advances
@@ -59,7 +64,7 @@ async function initEmployeePage() {
       .filter((row) => String(row.Date || '').slice(0, 7) === monthKey)
       .filter((row) => String(row.Status || '').toLowerCase() !== 'cancelled')
       .reduce((sum, row) => sum + Number(row.Amount || 0), 0);
-    document.getElementById('advance').textContent = formatCurrency(monthAdvance);
+    if (advanceEl) advanceEl.textContent = formatCurrency(monthAdvance);
   }
 
   function renderDetails(employee) {
@@ -302,7 +307,8 @@ async function initEmployeePage() {
     const todayStr = getTodayDateString();
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-    document.getElementById('calendarMonthLabel').textContent = `${monthNames[month]} ${year}`;
+    const calendarMonthLabelEl = document.getElementById('calendarMonthLabel');
+    if (calendarMonthLabelEl) calendarMonthLabelEl.textContent = `${monthNames[month]} ${year}`;
 
     let html = '';
     ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach((d) => {
@@ -356,17 +362,22 @@ async function initEmployeePage() {
         </div>`;
     };
 
-    document.getElementById('dayDetailTitle').textContent = formatDateDisplay(dateStr);
-    document.getElementById('dayDetailBody').innerHTML =
+    const dayDetailTitleEl = document.getElementById('dayDetailTitle');
+    const dayDetailBodyEl = document.getElementById('dayDetailBody');
+    const dayDetailTotalEl = document.getElementById('dayDetailTotal');
+    const dayDetailModalEl = document.getElementById('dayDetailModal');
+
+    if (dayDetailTitleEl) dayDetailTitleEl.textContent = formatDateDisplay(dateStr);
+    if (dayDetailBodyEl) dayDetailBodyEl.innerHTML =
       rows.map((r) => renderSession(r, 'approved')).join('') +
       pendingRows.map((r) => renderSession(r, 'pending')).join('');
     
     let totalText = `Total: ${minutesToHours(totalMinutes)} hours`;
     if (totalOTMinutes > 0) {
-      totalText += ` (OT : ${minutesToHours(totalOTMinutes)} hours)`;
+      totalText += ` (OT: ${minutesToHours(totalOTMinutes)} hours)`;
     }
-    document.getElementById('dayDetailTotal').textContent = totalText;
-    document.getElementById('dayDetailModal').classList.remove('hidden');
+    if (dayDetailTotalEl) dayDetailTotalEl.textContent = totalText;
+    if (dayDetailModalEl) dayDetailModalEl.classList.remove('hidden');
   }
 
   document.getElementById('closeDayDetailModal')?.addEventListener('click', () => {
