@@ -72,6 +72,8 @@ async function initAdminPage() {
   }
 
   function renderEmployees(rows) {
+    const employeeCardsEl = document.getElementById('employeeCards');
+    if (!employeeCardsEl) return;
     const query = (searchInput?.value || '').toLowerCase();
     const filtered = rows.filter((row) => {
       const name = String(row.EmployeeName || '').toLowerCase();
@@ -116,8 +118,11 @@ async function initAdminPage() {
   }
 
   function renderPending(rows) {
-    document.getElementById('pendingCount').textContent = rows.length;
-    document.getElementById('pendingApprovalsBody').innerHTML = rows.map((row) => {
+    const pendingCountEl = document.getElementById('pendingCount');
+    if (pendingCountEl) pendingCountEl.textContent = rows ? rows.length : 0;
+    const pendingApprovalsBodyEl = document.getElementById('pendingApprovalsBody');
+    if (!pendingApprovalsBodyEl) return;
+    pendingApprovalsBodyEl.innerHTML = rows.map((row) => {
       const emp = employees.find((e) => String(e.EmployeeID) === String(row.EmployeeID));
       const empName = emp ? emp.EmployeeName : row.EmployeeID;
       return `
