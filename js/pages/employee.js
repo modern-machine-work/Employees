@@ -13,9 +13,10 @@ async function initEmployeePage() {
   let me = null;
 
   async function loadData() {
-    const [employees, myAttendance, myAdvances] = await Promise.all([
+    const [employees, attendanceRows, pendingRows, myAdvances] = await Promise.all([
       apiGet('getEmployees'),
-      apiGet('getMyAttendance', { employeeID }),
+      apiGet('getAttendance').catch(() => []),
+      apiGet('getAttendancePending').catch(() => []),
       apiGet('getAdvances').catch(() => []),
     ]);
 
@@ -25,15 +26,15 @@ async function initEmployeePage() {
       return;
     }
 
-    approved = myAttendance.approved || [];
-    pending = myAttendance.pending || [];
+    approved = (attendanceRows || []).filter((row) => String(row.EmployeeID) === String(employeeID));
+    pending = (pendingRows || []).filter((row) => String(row.EmployeeID) === String(employeeID));
     advances = myAdvances || [];
 
     const monthKey = getCurrentMonthKey();
-    const allAttendance = [...approved, ...pending];
+    const monthAttendance = [...approved, ...pending];
     const approvedDates = approved.map((row) => normalizeDateStr(row.Date));
     const daysWorked = approvedDates.filter((d) => d.startsWith(monthKey)).length;
-    const totalPayableMinutes = allAttendance
+    const totalPayableMinutes = monthAttendance
       .filter((row) => String(row.Date || '').slice(0, 7) === monthKey)
       .reduce((sum, row) => sum + Number(row.WorkMinutes || 0) + Number(row.OTMinutes || 0), 0);
 
@@ -329,6 +330,16 @@ async function initEmployeePage() {
     });
 
     document.getElementById('attendanceCalendar').innerHTML = html;
+
+    const monthAttendance = [...approved, ...pending].filter((row) => String(row.Date || '').slice(0, 7) === monthKey);
+    const monthTotalMinutes = monthAttendance.reduce((sum, row) => sum + Number(row.WorkMinutes || 0) + Number(row.OTMinutes || 0), 0);
+    const monthTotalHours = monthTotalMinutes / 60;
+    const monthEarned = calculateEarnedSalary(Object.assign({}, me, { _totalPayableMinutes: monthTotalMinutes }), monthKey);
+
+    const calendarTotalHoursEl = document.getElementById('calendarTotalHours');
+    const calendarSalaryEarnedEl = document.getElementById('calendarSalaryEarned');
+    if (calendarTotalHoursEl) calendarTotalHoursEl.textContent = `Total Hours: ${monthTotalHours.toFixed(2)}`;
+    if (calendarSalaryEarnedEl) calendarSalaryEarnedEl.textContent = `Salary Earned: ${formatCurrency(monthEarned)}`;
   }
 
   function showDayDetail(dateStr) {
