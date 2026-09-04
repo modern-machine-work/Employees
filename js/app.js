@@ -74,7 +74,7 @@ function formatDateDisplay(value) {
 
 function formatCurrency(value) {
   const num = Number(value || 0);
-  return '₹ ' + num.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 0 });
+  return '₹ ' + num.toLocaleString('en-IN', { maximumFractionDigits: 0, minimumFractionDigits: 0 });
 }
 
 function minutesToHours(minutes) {
