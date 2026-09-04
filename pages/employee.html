@@ -30,9 +30,9 @@
 </div>
 
 <div class="stat-grid" id="employeeStats">
-  <div class="stat-card"><span>Salary Earned This Month</span><strong id="earnedSalary">—</strong></div>
+  <div class="stat-card"><span>Salary Earned</span><strong id="earnedSalary">—</strong></div>
   <div class="stat-card"><span>Advance for current month</span><strong id="advance">—</strong></div>
-  <div class="stat-card"><span>Days Present (This Month)</span><strong id="daysPresent">—</strong></div>
+  <div class="stat-card"><span>Total Hours</span><strong id="totalHours">—</strong></div>
 </div>
 
 <div class="dashboard-panel">
@@ -52,6 +52,10 @@
     </div>
   </div>
   <div id="attendanceCalendar" class="calendar-grid"></div>
+  <div class="calendar-summary" id="calendarSummary">
+    <span id="calendarTotalHours">Total Hours: 0.00</span>
+    <span id="calendarSalaryEarned">Salary Earned: ₹ 0</span>
+  </div>
   <div id="dayDetails" class="dashboard-panel hidden" style="margin-top:16px; box-shadow:none; background:#fbfdff;"></div>
   <div class="legend-row">
     <span class="legend-item"><span class="legend-swatch swatch-present"></span>Present</span>
