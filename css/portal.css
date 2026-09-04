@@ -372,6 +372,20 @@ body.no-sidebar .sidebar-backdrop {
   padding-bottom: 4px;
 }
 
+.calendar-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-weight: 700;
+  color: var(--text);
+  font-size: 14px;
+}
+
 @media (max-width: 620px) {
   .calendar-day { font-size: 12px; }
 }
